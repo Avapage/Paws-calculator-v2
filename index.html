@@ -24,7 +24,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 400px;
+      max-width: 600px;
       box-sizing: border-box;
     }
     label {
@@ -48,6 +48,7 @@
       border-radius: 5px;
       font-size: 16px;
       cursor: pointer;
+      width: 100%;
     }
     button:hover {
       background-color: #45a049;
@@ -105,9 +106,7 @@
     <button id="calculateBtn">Calculate</button>
 
     <div class="result" id="result">
-      <p><strong>Token Price:</strong> -</p>
-      <p><strong>Your $PAWS Value:</strong> -</p>
-      <p><strong>FDV:</strong> -</p>
+      <!-- Results will be dynamically injected here -->
     </div>
   </div>
 
@@ -116,11 +115,12 @@
     const calculateBtn = document.getElementById('calculateBtn');
     const resultDiv = document.getElementById('result');
 
-    const totalSupply = 100_000_000_000;
-    const circulatingSupply = 50_000_000_000;
+    // Tokenomics Constants
+    const totalSupply = 100_000_000_000; // Total supply (100B)
+    const circulatingSupply = 50_000_000_000; // Circulating supply (50B)
 
-    // Fixed market cap of 100M
-    const marketCap = 100_000_000;
+    // Market Cap Range from 100M to 1B
+    const marketCapRange = [100_000_000, 200_000_000, 300_000_000, 400_000_000, 500_000_000, 600_000_000, 700_000_000, 800_000_000, 900_000_000, 1_000_000_000];
 
     function formatUSD(value) {
       return "$" + Number(value).toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4});
@@ -130,22 +130,43 @@
       const tokens = parseFloat(tokensInput.value);
 
       if (isNaN(tokens) || tokens <= 0) {
-        resultDiv.style.display = 'none';
+        resultDiv.style.display = 'none'; // Hide result if input is invalid
         return;
       }
 
-      const tokenPrice = marketCap / circulatingSupply;
-      const yourValue = tokens * tokenPrice;
-      const fdv = tokenPrice * totalSupply;
+      let resultHTML = "<h3>Results</h3><div style='display: flex; justify-content: space-between; flex-wrap: wrap;'>";
 
-      resultDiv.innerHTML = `
-        <p><strong>Token Price:</strong> ${formatUSD(tokenPrice)}</p>
-        <p><strong>Your $PAWS Value:</strong> ${formatUSD(yourValue)}</p>
-        <p><strong>FDV:</strong> ${formatUSD(fdv)}</p>`;
-      
+      marketCapRange.forEach(marketCap => {
+        // Calculate Token Price from Market Cap and Circulating Supply
+        const tokenPrice = marketCap / circulatingSupply;
+
+        // Calculate Your PAWS Value (based on how many tokens the user owns)
+        const yourValue = tokens * tokenPrice;
+
+        // Calculate FDV (Fully Diluted Valuation)
+        const fdv = tokenPrice * totalSupply;
+
+        resultHTML += `
+          <div style="margin-bottom: 20px; width: 150px; text-align: center;">
+            <p><strong>Your $PAWS Value</strong></p>
+            <p>${formatUSD(yourValue)}</p>
+            <p><strong>Token Price</strong></p>
+            <p>${formatUSD(tokenPrice)}</p>
+            <p><strong>Market Cap</strong></p>
+            <p>${formatUSD(marketCap)}</p>
+            <p><strong>FDV</strong></p>
+            <p>${formatUSD(fdv)}</p>
+          </div>
+        `;
+      });
+
+      resultHTML += "</div>"; // Close the result div container
+
+      resultDiv.innerHTML = resultHTML;
       resultDiv.style.display = 'block'; // Show result after calculation
     }
 
+    // Event listener to trigger calculation when the button is clicked
     calculateBtn.addEventListener('click', calculate);
   </script>
 
