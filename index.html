@@ -1,80 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PAWS Calculator</title>
   <style>
+    /* Base setup */
     body {
       font-family: "Times New Roman", Times, serif;
       background-color: #f9f9f9;
+      background-image: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+      background-size: cover;
       color: #333;
+      margin: 0;
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 40px;
-      background-image: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png'); /* Add grain texture */
-      background-size: cover;
     }
+
     h2 {
       font-size: 24px;
       margin-bottom: 10px;
     }
+
     .container {
       background: #fff;
-      padding: 20px 30px;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      width: 100%;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       max-width: 800px;
+      width: 100%;
       box-sizing: border-box;
     }
+
     label {
       display: block;
       margin-top: 15px;
     }
+
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
       margin-top: 5px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-sizing: border-box;
     }
-    button {
+
+    /* Button Style + Neon Animation */
+    .btn-wrapper {
+      display: flex;
+      justify-content: center;
       margin-top: 20px;
-      padding: 10px 15px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 50%; /* Rounded button */
-      font-size: 16px;
-      cursor: pointer;
-      width: 150px; /* Fixed width to control circle size */
-      height: 150px; /* Fixed height to make the button circular */
       position: relative;
+    }
+
+    button {
+      background: #4CAF50;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      padding: 12px 24px;
+      cursor: pointer;
+      z-index: 1;
+      position: relative;
+      transition: background 0.3s ease;
       overflow: hidden;
-      box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
     }
 
     button:hover {
-      background-color: #45a049;
+      background: #45a049;
     }
 
-    /* Neon violet glowing circle around the button */
-    button::before {
-      content: '';
+    .glow-border {
+      content: "";
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 2px solid #8A2BE2; /* Violet neon color */
-      border-radius: 50%;
-      animation: moveGlow 3s infinite linear;
+      top: -4px;
+      left: -4px;
+      right: -4px;
+      bottom: -4px;
+      border-radius: 10px;
+      border: 2px solid #8A2BE2;
+      box-shadow: 0 0 12px 4px #8A2BE2;
+      animation: rotateBorder 3s linear infinite;
+      z-index: 0;
     }
 
-    @keyframes moveGlow {
+    @keyframes rotateBorder {
       0% {
         transform: rotate(0deg);
       }
@@ -83,58 +98,45 @@
       }
     }
 
+    /* Results Table */
     .result {
-      margin-top: 20px;
-      font-size: 16px;
-      display: none; /* Hide initially */
+      margin-top: 30px;
+      display: none;
+      overflow-x: auto;
     }
+
     table {
       width: 100%;
-      margin-top: 20px;
       border-collapse: collapse;
       text-align: center;
     }
-    table, th, td {
+
+    th, td {
+      padding: 10px;
       border: 1px solid #ccc;
-      padding: 8px;
     }
+
     th {
-      background-color: #f2f2f2;
-      font-weight: bold;
+      background: #f2f2f2;
     }
+
     td {
       font-size: 14px;
     }
 
-    /* Mobile responsiveness */
     @media (max-width: 600px) {
-      body {
-        padding: 20px;
-      }
-      .container {
-        padding: 15px;
-        width: 100%;
-      }
       h2 {
         font-size: 20px;
       }
-      input {
-        font-size: 14px;
-        padding: 8px;
-      }
-      table, th, td {
-        font-size: 12px;
-      }
-    }
-
-    /* Tablet and larger screens */
-    @media (min-width: 600px) and (max-width: 1024px) {
-      h2 {
-        font-size: 22px;
-      }
       .container {
-        width: 90%;
-        max-width: 800px;
+        padding: 20px;
+      }
+      input, button {
+        font-size: 14px;
+        padding: 10px;
+      }
+      td, th {
+        font-size: 12px;
       }
     }
 
@@ -145,79 +147,62 @@
   <h2>PAWS Calculator</h2>
   <div class="container">
     <label for="tokens">How many $PAWS tokens do you have?</label>
-    <input type="number" id="tokens" placeholder="Enter your token amount">
+    <input type="number" id="tokens" placeholder="Enter token amount" />
 
-    <button id="calculateBtn">Calculate</button>
-
-    <div class="result" id="result">
-      <!-- Results will be dynamically injected here -->
+    <div class="btn-wrapper">
+      <span class="glow-border"></span>
+      <button id="calculateBtn">Calculate</button>
     </div>
+
+    <div class="result" id="result"></div>
   </div>
 
   <script>
-    const tokensInput = document.getElementById('tokens');
     const calculateBtn = document.getElementById('calculateBtn');
+    const tokensInput = document.getElementById('tokens');
     const resultDiv = document.getElementById('result');
 
-    // Tokenomics Constants
-    const totalSupply = 100_000_000_000; // Total supply (100B)
-    const circulatingSupply = 50_000_000_000; // Circulating supply (50B)
+    const totalSupply = 100_000_000_000; // 100B
+    const circulatingSupply = 50_000_000_000; // 50B
+    const marketCaps = [100e6, 200e6, 300e6, 400e6, 500e6, 600e6, 700e6, 800e6, 900e6, 1e9];
 
-    // Market Cap Range from 100M to 1B
-    const marketCapRange = [100_000_000, 200_000_000, 300_000_000, 400_000_000, 500_000_000, 600_000_000, 700_000_000, 800_000_000, 900_000_000, 1_000_000_000];
-
-    function formatNumber(value) {
-      if (value >= 1_000_000_000) {
-        return (value / 1_000_000_000).toFixed(2) + 'B'; // For billions
-      } else if (value >= 1_000_000) {
-        return (value / 1_000_000).toFixed(2) + 'M'; // For millions
-      } else {
-        return value.toLocaleString(); // For smaller values (thousands)
-      }
+    const formatUSD = (val) => {
+      if (val >= 1e9) return "$" + (val / 1e9).toFixed(2) + "B";
+      if (val >= 1e6) return "$" + (val / 1e6).toFixed(2) + "M";
+      return "$" + val.toLocaleString();
     }
 
-    function formatUSD(value) {
-      return "$" + formatNumber(value);
-    }
-
-    function calculate() {
+    calculateBtn.addEventListener("click", () => {
       const tokens = parseFloat(tokensInput.value);
-
-      if (isNaN(tokens) || tokens <= 0) {
-        resultDiv.style.display = 'none'; // Hide result if input is invalid
+      if (!tokens || tokens <= 0) {
+        resultDiv.style.display = 'none';
         return;
       }
 
-      let resultHTML = "<h3>Results</h3><table><thead><tr><th>Market Cap</th><th>Your Token Worth</th><th>Token Price</th><th>FDV</th></tr></thead><tbody>";
+      let html = `<table><thead><tr>
+        <th>Market Cap</th>
+        <th>Your Token Worth</th>
+        <th>Token Price</th>
+        <th>FDV</th>
+      </tr></thead><tbody>`;
 
-      marketCapRange.forEach(marketCap => {
-        // Calculate Token Price from Market Cap and Circulating Supply
-        const tokenPrice = marketCap / circulatingSupply;
+      marketCaps.forEach(cap => {
+        const price = cap / circulatingSupply;
+        const worth = tokens * price;
+        const fdv = price * totalSupply;
 
-        // Calculate Your PAWS Value (based on how many tokens the user owns)
-        const yourValue = tokens * tokenPrice;
-
-        // Calculate FDV (Fully Diluted Valuation)
-        const fdv = tokenPrice * totalSupply;
-
-        resultHTML += `
-          <tr>
-            <td>${formatUSD(marketCap)}</td>
-            <td>${formatUSD(yourValue)}</td>
-            <td>${formatUSD(tokenPrice)}</td>
-            <td>${formatUSD(fdv)}</td>
-          </tr>
-        `;
+        html += `<tr>
+          <td>${formatUSD(cap)}</td>
+          <td>${formatUSD(worth)}</td>
+          <td>${formatUSD(price)}</td>
+          <td>${formatUSD(fdv)}</td>
+        </tr>`;
       });
 
-      resultHTML += "</tbody></table>"; // Close the table tag
-
-      resultDiv.innerHTML = resultHTML;
-      resultDiv.style.display = 'block'; // Show result after calculation
-    }
-
-    // Event listener to trigger calculation when the button is clicked
-    calculateBtn.addEventListener('click', calculate);
+      html += "</tbody></table>";
+      resultDiv.innerHTML = html;
+      resultDiv.style.display = "block";
+    });
   </script>
 
 </body>
