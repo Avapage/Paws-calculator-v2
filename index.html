@@ -31,7 +31,7 @@
       display: block;
       margin-top: 15px;
     }
-    input, select {
+    input {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -59,7 +59,7 @@
       h2 {
         font-size: 20px;
       }
-      input, select {
+      input {
         font-size: 14px;
         padding: 8px;
       }
@@ -88,15 +88,6 @@
     <label for="tokens">How many $PAWS tokens do you have?</label>
     <input type="number" id="tokens" placeholder="Enter your token amount">
 
-    <label for="marketcap">Select Market Cap Range</label>
-    <select id="marketcap">
-      <option value="100000000">100M</option>
-      <option value="250000000">250M</option>
-      <option value="500000000">500M</option>
-      <option value="750000000">750M</option>
-      <option value="1000000000">1B</option>
-    </select>
-
     <div class="result" id="result">
       <p><strong>Token Price:</strong> -</p>
       <p><strong>Your $PAWS Value:</strong> -</p>
@@ -106,11 +97,13 @@
 
   <script>
     const tokensInput = document.getElementById('tokens');
-    const marketcapSelect = document.getElementById('marketcap');
     const resultDiv = document.getElementById('result');
 
     const totalSupply = 100_000_000_000;
     const circulatingSupply = 50_000_000_000;
+
+    // Fixed market cap of 100M
+    const marketCap = 100_000_000;
 
     function formatUSD(value) {
       return "$" + Number(value).toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4});
@@ -118,9 +111,8 @@
 
     function calculate() {
       const tokens = parseFloat(tokensInput.value);
-      const marketCap = parseFloat(marketcapSelect.value);
 
-      if (isNaN(tokens) || tokens <= 0 || isNaN(marketCap) || marketCap <= 0) {
+      if (isNaN(tokens) || tokens <= 0) {
         resultDiv.innerHTML = `
           <p><strong>Token Price:</strong> -</p>
           <p><strong>Your $PAWS Value:</strong> -</p>
@@ -139,7 +131,6 @@
     }
 
     tokensInput.addEventListener('input', calculate);
-    marketcapSelect.addEventListener('change', calculate);
   </script>
 
 </body>
