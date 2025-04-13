@@ -24,7 +24,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       width: 100%;
-      max-width: 600px;
+      max-width: 800px;
       box-sizing: border-box;
     }
     label {
@@ -58,8 +58,22 @@
       font-size: 16px;
       display: none; /* Hide initially */
     }
-    .result p {
-      margin: 5px 0;
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+      text-align: center;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+    td {
+      font-size: 14px;
     }
 
     /* Mobile responsiveness */
@@ -78,8 +92,8 @@
         font-size: 14px;
         padding: 8px;
       }
-      .result p {
-        font-size: 14px;
+      table, th, td {
+        font-size: 12px;
       }
     }
 
@@ -90,7 +104,7 @@
       }
       .container {
         width: 90%;
-        max-width: 600px;
+        max-width: 800px;
       }
     }
 
@@ -122,8 +136,18 @@
     // Market Cap Range from 100M to 1B
     const marketCapRange = [100_000_000, 200_000_000, 300_000_000, 400_000_000, 500_000_000, 600_000_000, 700_000_000, 800_000_000, 900_000_000, 1_000_000_000];
 
+    function formatNumber(value) {
+      if (value >= 1_000_000_000) {
+        return (value / 1_000_000_000).toFixed(2) + 'B'; // For billions
+      } else if (value >= 1_000_000) {
+        return (value / 1_000_000).toFixed(2) + 'M'; // For millions
+      } else {
+        return value.toLocaleString(); // For smaller values (thousands)
+      }
+    }
+
     function formatUSD(value) {
-      return "$" + Number(value).toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4});
+      return "$" + formatNumber(value);
     }
 
     function calculate() {
@@ -134,7 +158,7 @@
         return;
       }
 
-      let resultHTML = "<h3>Results</h3><div style='display: flex; justify-content: space-between; flex-wrap: wrap;'>";
+      let resultHTML = "<h3>Results</h3><table><thead><tr><th>Market Cap</th><th>Your Token Worth</th><th>Token Price</th><th>FDV</th></tr></thead><tbody>";
 
       marketCapRange.forEach(marketCap => {
         // Calculate Token Price from Market Cap and Circulating Supply
@@ -147,20 +171,16 @@
         const fdv = tokenPrice * totalSupply;
 
         resultHTML += `
-          <div style="margin-bottom: 20px; width: 150px; text-align: center;">
-            <p><strong>Your $PAWS Value</strong></p>
-            <p>${formatUSD(yourValue)}</p>
-            <p><strong>Token Price</strong></p>
-            <p>${formatUSD(tokenPrice)}</p>
-            <p><strong>Market Cap</strong></p>
-            <p>${formatUSD(marketCap)}</p>
-            <p><strong>FDV</strong></p>
-            <p>${formatUSD(fdv)}</p>
-          </div>
+          <tr>
+            <td>${formatUSD(marketCap)}</td>
+            <td>${formatUSD(yourValue)}</td>
+            <td>${formatUSD(tokenPrice)}</td>
+            <td>${formatUSD(fdv)}</td>
+          </tr>
         `;
       });
 
-      resultHTML += "</div>"; // Close the result div container
+      resultHTML += "</tbody></table>"; // Close the table tag
 
       resultDiv.innerHTML = resultHTML;
       resultDiv.style.display = 'block'; // Show result after calculation
