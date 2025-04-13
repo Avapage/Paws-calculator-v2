@@ -58,7 +58,7 @@
       background-color: #45a049;
     }
 
-    /* Neon glowing and circular animation */
+    /* Neon violet glowing circle animation around the button */
     button::before {
       content: '';
       position: absolute;
@@ -66,23 +66,17 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      border: 2px solid #00FF00;
+      border: 2px solid #8A2BE2; /* Violet neon color */
       border-radius: 50%;
-      animation: pulse 1.5s infinite ease-in-out;
+      animation: moveGlow 2s infinite linear;
     }
 
-    @keyframes pulse {
+    @keyframes moveGlow {
       0% {
-        transform: scale(0.8);
-        opacity: 1;
-      }
-      50% {
-        transform: scale(1.2);
-        opacity: 0.5;
+        transform: rotate(0deg);
       }
       100% {
-        transform: scale(0.8);
-        opacity: 1;
+        transform: rotate(360deg);
       }
     }
 
