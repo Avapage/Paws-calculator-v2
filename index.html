@@ -39,9 +39,23 @@
       border: 1px solid #ccc;
       border-radius: 8px;
     }
+    button {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
     .result {
       margin-top: 20px;
       font-size: 16px;
+      display: none; /* Hide initially */
     }
     .result p {
       margin: 5px 0;
@@ -88,6 +102,8 @@
     <label for="tokens">How many $PAWS tokens do you have?</label>
     <input type="number" id="tokens" placeholder="Enter your token amount">
 
+    <button id="calculateBtn">Calculate</button>
+
     <div class="result" id="result">
       <p><strong>Token Price:</strong> -</p>
       <p><strong>Your $PAWS Value:</strong> -</p>
@@ -97,6 +113,7 @@
 
   <script>
     const tokensInput = document.getElementById('tokens');
+    const calculateBtn = document.getElementById('calculateBtn');
     const resultDiv = document.getElementById('result');
 
     const totalSupply = 100_000_000_000;
@@ -113,10 +130,7 @@
       const tokens = parseFloat(tokensInput.value);
 
       if (isNaN(tokens) || tokens <= 0) {
-        resultDiv.innerHTML = `
-          <p><strong>Token Price:</strong> -</p>
-          <p><strong>Your $PAWS Value:</strong> -</p>
-          <p><strong>FDV:</strong> -</p>`;
+        resultDiv.style.display = 'none';
         return;
       }
 
@@ -128,9 +142,11 @@
         <p><strong>Token Price:</strong> ${formatUSD(tokenPrice)}</p>
         <p><strong>Your $PAWS Value:</strong> ${formatUSD(yourValue)}</p>
         <p><strong>FDV:</strong> ${formatUSD(fdv)}</p>`;
+      
+      resultDiv.style.display = 'block'; // Show result after calculation
     }
 
-    tokensInput.addEventListener('input', calculate);
+    calculateBtn.addEventListener('click', calculate);
   </script>
 
 </body>
