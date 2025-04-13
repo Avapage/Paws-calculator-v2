@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PAWS Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px;
+    }
+    h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 16px;
+    }
+    .result p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>PAWS Calculator</h2>
+  <div class="container">
+    <label for="tokens">How many $PAWS tokens do you have?</label>
+    <input type="number" id="tokens" placeholder="Enter your token amount">
+
+    <label for="marketcap">Enter Market Cap</label>
+    <input type="number" id="marketcap" placeholder="Enter market cap (e.g., 100000000)">
+
+    <div class="result" id="result">
+      <p><strong>Token Price:</strong> -</p>
+      <p><strong>Your $PAWS Value:</strong> -</p>
+      <p><strong>FDV:</strong> -</p>
+    </div>
+  </div>
+
+  <script>
+    const tokensInput = document.getElementById('tokens');
+    const marketcapInput = document.getElementById('marketcap');
+    const resultDiv = document.getElementById('result');
+
+    const totalSupply = 100_000_000_000;
+    const circulatingSupply = 50_000_000_000;
+
+    function formatUSD(value) {
+      return "$" + Number(value).toLocaleString(undefined, {minimumFractionDigits: 4, maximumFractionDigits: 4});
+    }
+
+    function calculate() {
+      const tokens = parseFloat(tokensInput.value);
+      const marketCap = parseFloat(marketcapInput.value);
+
+      if (isNaN(tokens) || tokens <= 0 || isNaN(marketCap) || marketCap <= 0) {
+        resultDiv.innerHTML = `
+          <p><strong>Token Price:</strong> -</p>
+          <p><strong>Your $PAWS Value:</strong> -</p>
+          <p><strong>FDV:</strong> -</p>`;
+        return;
+      }
+
+      const tokenPrice = marketCap / circulatingSupply;
+      const yourValue = tokens * tokenPrice;
+      const fdv = tokenPrice * totalSupply;
+
+      resultDiv.innerHTML = `
+        <p><strong>Token Price:</strong> ${formatUSD(tokenPrice)}</p>
+        <p><strong>Your $PAWS Value:</strong> ${formatUSD(yourValue)}</p>
+        <p><strong>FDV:</strong> ${formatUSD(fdv)}</p>`;
+    }
+
+    tokensInput.addEventListener('input', calculate);
+    marketcapInput.addEventListener('input', calculate);
+  </script>
+
+</body>
+</html>
