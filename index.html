@@ -2,10 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PAWS Calculator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: "Times New Roman", Times, serif;
       background-color: #f9f9f9;
       color: #333;
       display: flex;
@@ -24,12 +25,13 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 400px;
+      box-sizing: border-box;
     }
     label {
       display: block;
       margin-top: 15px;
     }
-    input {
+    input, select {
       width: 100%;
       padding: 10px;
       font-size: 16px;
@@ -44,6 +46,39 @@
     .result p {
       margin: 5px 0;
     }
+
+    /* Mobile responsiveness */
+    @media (max-width: 600px) {
+      body {
+        padding: 20px;
+      }
+      .container {
+        padding: 15px;
+        width: 100%;
+      }
+      h2 {
+        font-size: 20px;
+      }
+      input, select {
+        font-size: 14px;
+        padding: 8px;
+      }
+      .result p {
+        font-size: 14px;
+      }
+    }
+
+    /* Tablet and larger screens */
+    @media (min-width: 600px) and (max-width: 1024px) {
+      h2 {
+        font-size: 22px;
+      }
+      .container {
+        width: 90%;
+        max-width: 600px;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -53,8 +88,14 @@
     <label for="tokens">How many $PAWS tokens do you have?</label>
     <input type="number" id="tokens" placeholder="Enter your token amount">
 
-    <label for="marketcap">Enter Market Cap</label>
-    <input type="number" id="marketcap" placeholder="Enter market cap (e.g., 100000000)">
+    <label for="marketcap">Select Market Cap Range</label>
+    <select id="marketcap">
+      <option value="100000000">100M</option>
+      <option value="250000000">250M</option>
+      <option value="500000000">500M</option>
+      <option value="750000000">750M</option>
+      <option value="1000000000">1B</option>
+    </select>
 
     <div class="result" id="result">
       <p><strong>Token Price:</strong> -</p>
@@ -65,7 +106,7 @@
 
   <script>
     const tokensInput = document.getElementById('tokens');
-    const marketcapInput = document.getElementById('marketcap');
+    const marketcapSelect = document.getElementById('marketcap');
     const resultDiv = document.getElementById('result');
 
     const totalSupply = 100_000_000_000;
@@ -77,7 +118,7 @@
 
     function calculate() {
       const tokens = parseFloat(tokensInput.value);
-      const marketCap = parseFloat(marketcapInput.value);
+      const marketCap = parseFloat(marketcapSelect.value);
 
       if (isNaN(tokens) || tokens <= 0 || isNaN(marketCap) || marketCap <= 0) {
         resultDiv.innerHTML = `
@@ -98,7 +139,7 @@
     }
 
     tokensInput.addEventListener('input', calculate);
-    marketcapInput.addEventListener('input', calculate);
+    marketcapSelect.addEventListener('change', calculate);
   </script>
 
 </body>
