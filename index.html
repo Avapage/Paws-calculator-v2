@@ -6,97 +6,137 @@
   <title>PAWS Calculator</title>
   <style>
     body {
-      font-family: "Times New Roman", serif;
-      background: radial-gradient(#fff, #f3f3f3);
+      font-family: "Times New Roman", Times, serif;
+      background-color: #f9f9f9;
+      background-image: url('https://www.transparenttextures.com/patterns/45-degree-fabric-light.png');
+      background-size: cover;
+      color: #333;
       margin: 0;
-      padding: 20px;
+      padding: 40px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
     h2 {
-      color: #4b0082;
-      font-size: 1.5rem;
-      margin-bottom: 20px;
-      text-align: center;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      max-width: 800px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
     }
 
     input {
-      padding: 10px;
-      font-size: 1rem;
-      width: 80%;
-      max-width: 300px;
-      margin-bottom: 20px;
+      width: 100%;
+      padding: 12px;
+      font-size: 16px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
     }
 
-    .calculate-btn {
+    .btn-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
       position: relative;
-      background-color: #4b0082;
-      color: #fff;
+    }
+
+    .neon-btn {
+      --neon-color: violet;
+      background: #111;
       border: none;
-      border-radius: 6px;
-      padding: 12px 24px;
-      font-size: 1rem;
+      padding: 14px 28px;
+      font-size: 18px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: all 0.3s ease;
-      overflow: hidden;
-      z-index: 1;
-    }
-
-    .calculate-btn .text {
+      color: white;
       position: relative;
-      z-index: 2;
-      filter: drop-shadow(0 0 1px currentcolor);
+      z-index: 1;
+      transition: all 0.3s ease;
+      filter: drop-shadow(0 0 4px var(--neon-color));
     }
 
-    .calculate-btn::after {
+    .neon-btn .text {
+      filter: drop-shadow(0 0 1px currentcolor);
+      transition: transform 0.3s ease;
+    }
+
+    .neon-btn::after {
       content: '';
       position: absolute;
-      z-index: 1;
       inset: 0;
       border-radius: inherit;
+      z-index: -1;
+      box-shadow: 0 0 6px 2px var(--neon-color);
       opacity: 0.5;
-      box-shadow: 0 0 0.6em 0.3em violet;
       transition: opacity 0.3s ease;
     }
 
-    .calculate-btn:hover {
+    .neon-btn:hover {
+      transform: scale(1.05);
+      background-color: #222;
+    }
+
+    .neon-btn:hover::after {
+      opacity: 0.9;
+    }
+
+    .neon-btn:hover .text {
       transform: scale(1.05);
     }
 
-    table {
+    .result {
       margin-top: 30px;
-      width: 90%;
-      max-width: 600px;
+      display: none;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
       border-collapse: collapse;
-      font-size: 0.95rem;
+      text-align: center;
     }
 
     th, td {
-      border: 1px solid #ccc;
       padding: 10px;
-      text-align: center;
+      border: 1px solid #ccc;
     }
 
     th {
-      background-color: #eee;
+      background: #f2f2f2;
     }
 
-    footer {
-      text-align: center;
-      font-size: 0.8rem;
-      color: #888;
-      margin-top: 60px;
+    td {
+      font-size: 14px;
     }
 
-    @media (max-width: 500px) {
-      input, .calculate-btn {
-        width: 100%;
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 20px;
       }
-
-      table {
-        font-size: 0.85rem;
+      .container {
+        padding: 20px;
+      }
+      input, button {
+        font-size: 14px;
+        padding: 10px;
+      }
+      td, th {
+        font-size: 12px;
       }
     }
   </style>
@@ -104,51 +144,65 @@
 <body>
 
   <h2>PAWS Calculator</h2>
+  <div class="container">
+    <label for="tokens">How many $PAWS tokens do you have?</label>
+    <input type="number" id="tokens" placeholder="Enter token amount" />
 
-  <input type="number" id="tokenAmount" placeholder="Enter your token amount" />
+    <div class="btn-wrapper">
+      <button class="neon-btn" id="calculateBtn">
+        <span class="text">Calculate</span>
+      </button>
+    </div>
 
-  <button class="calculate-btn" onclick="calculateWorth()">
-    <span class="text">Calculate</span>
-  </button>
-
-  <div id="results"></div>
-
-  <footer>2025 Made With Love 🐾</footer>
+    <div class="result" id="result"></div>
+  </div>
 
   <script>
-    function formatMoney(num) {
-      if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
-      if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
-      if (num >= 1e3) return (num / 1e3).toFixed(2) + "K";
-      return num.toFixed(2);
+    const calculateBtn = document.getElementById('calculateBtn');
+    const tokensInput = document.getElementById('tokens');
+    const resultDiv = document.getElementById('result');
+
+    const totalSupply = 100_000_000_000;
+    const circulatingSupply = 50_000_000_000;
+    const marketCaps = [100e6, 200e6, 300e6, 400e6, 500e6, 600e6, 700e6, 800e6, 900e6, 1e9];
+
+    const formatUSD = (val) => {
+      if (val >= 1e9) return "$" + (val / 1e9).toFixed(2) + "B";
+      if (val >= 1e6) return "$" + (val / 1e6).toFixed(2) + "M";
+      return "$" + val.toLocaleString();
     }
 
-    function calculateWorth() {
-      const tokenAmount = parseFloat(document.getElementById("tokenAmount").value);
-      if (isNaN(tokenAmount) || tokenAmount <= 0) return;
+    calculateBtn.addEventListener("click", () => {
+      const tokens = parseFloat(tokensInput.value);
+      if (!tokens || tokens <= 0) {
+        resultDiv.style.display = 'none';
+        return;
+      }
 
-      const mcapList = [100e6, 200e6, 300e6, 400e6, 500e6, 600e6, 700e6, 800e6, 900e6, 1e9];
-      const totalSupply = 100e9;
-      const circulatingSupply = totalSupply * 0.5;
+      let html = `<table><thead><tr>
+        <th>Market Cap</th>
+        <th>Your Token Worth</th>
+        <th>Token Price</th>
+        <th>FDV</th>
+      </tr></thead><tbody>`;
 
-      let html = "<table><tr><th>Your Worth</th><th>Token Price</th><th>Market Cap</th><th>FDV</th></tr>";
-
-      mcapList.forEach(mcap => {
-        const price = mcap / circulatingSupply;
-        const worth = price * tokenAmount;
+      marketCaps.forEach(cap => {
+        const price = cap / circulatingSupply;
+        const worth = tokens * price;
         const fdv = price * totalSupply;
 
         html += `<tr>
-          <td>$${formatMoney(worth)}</td>
-          <td>$${price.toFixed(5)}</td>
-          <td>${formatMoney(mcap)}</td>
-          <td>${formatMoney(fdv)}</td>
+          <td>${formatUSD(cap)}</td>
+          <td>${formatUSD(worth)}</td>
+          <td>${formatUSD(price)}</td>
+          <td>${formatUSD(fdv)}</td>
         </tr>`;
       });
 
-      html += "</table>";
-      document.getElementById("results").innerHTML = html;
-    }
+      html += "</tbody></table>";
+      resultDiv.innerHTML = html;
+      resultDiv.style.display = "block";
+    });
   </script>
 
 </body>
