@@ -55,17 +55,6 @@
       position: relative;
     }
 
-    @keyframes pulse {
-      0%, 100% {
-        box-shadow: 0 0 4px 1.5px var(--neon-color);
-        opacity: 0.5;
-      }
-      50% {
-        box-shadow: 0 0 10px 4px var(--neon-color);
-        opacity: 0.9;
-      }
-    }
-
     .neon-btn {
       --neon-color: violet;
       background: #111;
@@ -92,13 +81,18 @@
       inset: 0;
       border-radius: inherit;
       z-index: -1;
-      animation: pulse 2s infinite ease-in-out;
-      background: transparent;
+      box-shadow: 0 0 6px 2px var(--neon-color);
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
     }
 
     .neon-btn:hover {
       transform: scale(1.05);
       background-color: #222;
+    }
+
+    .neon-btn:hover::after {
+      opacity: 0.9;
     }
 
     .neon-btn:hover .text {
@@ -130,13 +124,6 @@
       font-size: 14px;
     }
 
-    footer {
-      margin-top: 40px;
-      font-size: 12px;
-      color: #888;
-      text-align: center;
-    }
-
     @media (max-width: 600px) {
       h2 {
         font-size: 20px;
@@ -151,6 +138,64 @@
       td, th {
         font-size: 12px;
       }
+    }
+
+    /* Dark mode styles */
+    body.dark-mode {
+      background-color: #121212;
+      color: #e0e0e0;
+    }
+
+    .container.dark-mode {
+      background: #333;
+      color: #e0e0e0;
+    }
+
+    .dark-mode .neon-btn {
+      --neon-color: #bb86fc;
+    }
+
+    .dark-mode .neon-btn::after {
+      box-shadow: 0 0 6px 2px #bb86fc;
+    }
+
+    .dark-mode table th {
+      background: #444;
+      color: #e0e0e0;
+    }
+
+    .dark-mode table td {
+      color: #e0e0e0;
+    }
+
+    .dark-mode .footer {
+      color: #e0e0e0;
+    }
+
+    /* Dark mode toggle button */
+    .dark-mode-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      cursor: pointer;
+      font-size: 20px;
+      color: #333;
+    }
+
+    .dark-mode-toggle.sun {
+      display: none;
+    }
+
+    .dark-mode .dark-mode-toggle.sun {
+      display: inline-block;
+    }
+
+    .dark-mode .dark-mode-toggle.moon {
+      display: none;
+    }
+
+    .dark-mode-toggle.moon {
+      display: inline-block;
     }
   </style>
 </head>
@@ -170,12 +215,20 @@
     <div class="result" id="result"></div>
   </div>
 
-  <footer>2025 Made With Love 🐾</footer>
+  <div class="footer">
+    <p>2025 Made With Love 🐾</p>
+  </div>
+
+  <!-- Dark Mode Toggle -->
+  <div class="dark-mode-toggle moon" id="moon-toggle">&#127769;</div>
+  <div class="dark-mode-toggle sun" id="sun-toggle">&#127774;</div>
 
   <script>
     const calculateBtn = document.getElementById('calculateBtn');
     const tokensInput = document.getElementById('tokens');
     const resultDiv = document.getElementById('result');
+    const moonToggle = document.getElementById('moon-toggle');
+    const sunToggle = document.getElementById('sun-toggle');
 
     const totalSupply = 100_000_000_000;
     const circulatingSupply = 50_000_000_000;
@@ -217,6 +270,18 @@
       html += "</tbody></table>";
       resultDiv.innerHTML = html;
       resultDiv.style.display = "block";
+    });
+
+    moonToggle.addEventListener('click', () => {
+      document.body.classList.add('dark-mode');
+      moonToggle.style.display = 'none';
+      sunToggle.style.display = 'inline-block';
+    });
+
+    sunToggle.addEventListener('click', () => {
+      document.body.classList.remove('dark-mode');
+      moonToggle.style.display = 'inline-block';
+      sunToggle.style.display = 'none';
     });
   </script>
 
