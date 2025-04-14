@@ -69,6 +69,7 @@
       position: relative;
     }
 
+    /* Neon button with pulsing effect */
     .neon-btn {
       --neon-color: violet;
       background: #111;
@@ -82,6 +83,7 @@
       z-index: 1;
       transition: all 0.3s ease;
       filter: drop-shadow(0 0 4px var(--neon-color));
+      animation: pulse 1.5s infinite alternate; /* Added continuous pulsing animation */
     }
 
     .neon-btn .text {
@@ -111,6 +113,18 @@
 
     .neon-btn:hover .text {
       transform: scale(1.05);
+    }
+
+    /* Animation for pulsing effect */
+    @keyframes pulse {
+      0% {
+        filter: drop-shadow(0 0 4px var(--neon-color));
+        box-shadow: 0 0 6px 2px var(--neon-color);
+      }
+      100% {
+        filter: drop-shadow(0 0 12px var(--neon-color));
+        box-shadow: 0 0 14px 4px var(--neon-color);
+      }
     }
 
     .result {
@@ -242,46 +256,4 @@
 
     const totalSupply = 100_000_000_000;
     const circulatingSupply = 50_000_000_000;
-    const marketCaps = [100e6, 200e6, 300e6, 400e6, 500e6, 600e6, 700e6, 800e6, 900e6, 1e9];
-
-    const formatUSD = (val) => {
-      if (val >= 1e9) return "$" + (val / 1e9).toFixed(2) + "B";
-      if (val >= 1e6) return "$" + (val / 1e6).toFixed(2) + "M";
-      return "$" + val.toLocaleString();
-    }
-
-    calculateBtn.addEventListener("click", () => {
-      const tokens = parseFloat(tokensInput.value);
-      if (!tokens || tokens <= 0) {
-        resultDiv.style.display = 'none';
-        return;
-      }
-
-      let html = `<table><thead><tr>
-        <th>Market Cap</th>
-        <th>Your Token Worth</th>
-        <th>Token Price</th>
-        <th>FDV</th>
-      </tr></thead><tbody>`;
-
-      marketCaps.forEach(cap => {
-        const price = cap / circulatingSupply;
-        const worth = tokens * price;
-        const fdv = price * totalSupply;
-
-        html += `<tr>
-          <td>${formatUSD(cap)}</td>
-          <td>${formatUSD(worth)}</td>
-          <td>${formatUSD(price)}</td>
-          <td>${formatUSD(fdv)}</td>
-        </tr>`;
-      });
-
-      html += "</tbody></table>";
-      resultDiv.innerHTML = html;
-      resultDiv.style.display = "block";
-    });
-  </script>
-
-</body>
-</html>
+    const marketCaps = [100e6, 200e6, 300e6, 400e6, 500e6, 600e6, 700e6, 800e6, 900e6
